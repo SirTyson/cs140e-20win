@@ -13,6 +13,60 @@ static inline void delay_ncycles(unsigned start, unsigned n) {
         ;
 }
 
+#define ON0 0x2020001c
+#define CLR0 0x20200028
+
+// static inline void
+// init_gpio (void)
+// {
+//     asm (
+//         "mov r5,#0x20000000\n\t"
+//         "orr r5,r5,#0x00200000\n\t"
+//         "orr r5,r5,#0x0000001c\n\t"
+//         "mov r6,#0x20000000\n\t"
+//         "orr r6,r6,#0x00200000\n\t"
+//         "orr r6,r6,#0x00000028"
+//     );
+// }
+
+
+static inline void
+gpio_write_raw (unsigned pin, unsigned v)
+{
+    // if (v)
+    //     *(volatile unsigned *)(r5) = (1 << pin);
+    // else
+    //     *(volatile unsigned *)(r6) = (1 << pin);
+}
+
+static inline void
+gpio_write_on0 (unsigned val)
+{
+    //asm ("str r1, [r5]");
+    *(volatile unsigned *)(ON0) = val;
+}
+
+static inline void 
+gpio_write_clr0 (unsigned val)
+{
+    //asm ("str r1, [r6]");
+    *(volatile unsigned *)(CLR0) = val;
+}
+
+static inline void 
+write_on0_until (unsigned val, unsigned start, unsigned ncycles)
+{
+    gpio_write_on0 (val);
+    delay_ncycles (start, ncycles);
+}
+
+static inline void 
+write_clr0_until (unsigned val, unsigned start, unsigned ncycles)
+{
+    gpio_write_clr0 (val);
+    delay_ncycles (start, ncycles);
+}
+
 // write value <v> to GPIO <pin>: return when <ncycles> have passed since
 // time <start>
 //  
@@ -21,9 +75,8 @@ static inline void delay_ncycles(unsigned start, unsigned n) {
 // room for tricks.  also, remove the pin check.
 static inline void
 write_cyc_until(unsigned pin, unsigned v, unsigned start, unsigned ncycles) {
-    // GPIO_WRITE_RAW(pin,v);
-    gpio_write(pin,v);
-    delay_ncycles(start,ncycles);
+    gpio_write_raw (pin, v);
+    delay_ncycles (start, ncycles);
 }   
 
 // We don't seem to need this, so removing for the moment.  can

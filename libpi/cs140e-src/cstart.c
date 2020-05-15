@@ -4,7 +4,7 @@
 
 static sw_uart_t console_uart;
 static int internal_sw_putchar(int c) {
-    sw_uart_putc(&console_uart, c);
+    //sw_uart_putc(&console_uart, c);
     return c;
 }
 
@@ -25,7 +25,7 @@ void _cstart() {
         if(cb->console_dev == PUTC_SW_UART) {
             rpi_putchar = internal_sw_putchar;
             console_uart = cb->sw_uart;
-            sw_uart_printk(&console_uart, "about to print on regular printf\n");
+            //sw_uart_printk(&console_uart, "about to print on regular printf\n");
             printk("success!\n");
         }
     }

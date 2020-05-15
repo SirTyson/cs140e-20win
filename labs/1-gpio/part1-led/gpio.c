@@ -37,6 +37,7 @@ void nop(void);
 volatile unsigned *gpio_fsel0 = (void*)(GPIO_BASE + 0x00);
 volatile unsigned *gpio_set0  = (void*)(GPIO_BASE + 0x1C);
 volatile unsigned *gpio_clr0  = (void*)(GPIO_BASE + 0x28);
+volatile unsigned *gpio_lev0  = (void*)(GPIO_BASE + 0x34);
 
 // Part 1 implement gpio_set_on, gpio_set_off, gpio_set_output
 
@@ -44,10 +45,10 @@ volatile unsigned *gpio_clr0  = (void*)(GPIO_BASE + 0x28);
 // so you can use array calculations!
 void gpio_set_output(unsigned pin) {
     volatile unsigned *fsel = gpio_fsel0 + pin / 10;
-    // Why dows this not work?
-    //unsigned old = get32(fsel);
-    //old &= ~(0b110 << ((pin % 10) * 3));
-    put32(fsel, 0b001 << ((pin % 10) * 3));
+    volatile unsigned old = get32(fsel);
+    old &= (~(0b111 << ((pin % 10) * 3)));
+    old |= (0b001 << ((pin % 10) * 3));
+    put32(fsel, old);
 }
 
 // set GPIO <pin> on.
@@ -64,16 +65,15 @@ void gpio_set_off(unsigned pin) {
 
 // set <pin> to input.
 void gpio_set_input(unsigned pin) {
-    // implement.
+    volatile unsigned *fsel = gpio_fsel0 + pin / 10;
+    volatile unsigned old = get32(fsel);
+    old &= (~(0b111 << ((pin % 10) * 3)));
+    put32(fsel, old);
 }
 
 // return the value of <pin>
 int gpio_read(unsigned pin) {
-    unsigned v = 0;
-
-    // implement.
-
-    return v;
+    return get32(gpio_lev0 + pin / 32);
 }
 
 // set <pin> to <v> (v \in {0,1})

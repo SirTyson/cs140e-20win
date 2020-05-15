@@ -59,7 +59,7 @@ int is_gpio_int(unsigned gpio_int);
 // as the broadcom doc states, it  detects by sampling based on the clock.
 // it looks for "011" (low, hi, hi) to suppress noise.  i.e., its triggered only
 // *after* a 1 reading has been sampled twice, so there will be delay.
-// if you want lower latency, you should us async rising edge (p99)
+// if you want get32lower latency, you should us async rising edge (p99)
 void gpio_int_rising_edge(unsigned pin);
 
 // p98: detect falling edge (1->0).  sampled using the system clock.  
